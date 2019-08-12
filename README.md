@@ -92,6 +92,25 @@ for (Object[] next : artistAndPaintingCount) {
   long paintingsCount = (Long)next[1];
   System.out.println(artist.getArtistName() + " has " + paintingsCount + " painting(s)");
 }
+
+List<Painting> paintings = SQLSelect
+  .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TILTE LIKE #bind($title)")
+  .params("title", "painting%")
+  .upperColumnNames()
+  .localCache()
+  .limit(100)
+  .select(context);
+
+List<String> paintingNames = SQLSelect
+  .scalarQuery(String.class, "SELECT PAINTING_TILTE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
+  .params("price", 100000)
+  .select(context);
+
+int inserted = SQLExec
+  .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind(#name))")
+  .paramsArray(55, "Picasso")
+  .update(context);
+
 ```
 
 ```gradle
